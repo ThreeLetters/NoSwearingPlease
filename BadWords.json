@@ -22,7 +22,7 @@
   word: "dick",
   msg: "the D word",
   permut: "di*k,dic",
-  replace:"****",
+  replace:"****"
   },
   {
    word: "cunt",
