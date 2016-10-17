@@ -2,8 +2,12 @@
 const StringBuild = require('StringBuild.js')
 const list = JSON.parse(require('fs').readFileSync('./badwords.json',"utf8"))
 
-
-function escape(text) {
+module.exports = class NoSwearing {
+    constructor() {
+        
+        
+    }
+escape(text) {
     
     var keys = "q w e r t y u i o p a s d f g h j k l ; ' z x c v b n m"
     
@@ -25,13 +29,14 @@ if (k.indexOf(char) != -1 && (text.charAt(i-1) != char || map[char])) newtext.ap
     
     return newtext.toString()
 }
-function checkIfOkay(text) { 
+checkIfOkay(text) { 
     
     var watch = "";
     var seq = 0;
     var chance = 3;
     var nonchance = 3
     var co = 0;
+    var index = 0;
     var fo = 0;
     if (text) text = text.toLowerCase()
     text = escape(text)
@@ -44,7 +49,7 @@ function checkIfOkay(text) {
          var c = watch.charAt(seq)
          
          if (seq >= watch.length - 1) {
-             return false;
+             return {word: watch,index:index,ind:ind};
          }
            if (ch == c) {
                seq ++;
@@ -66,6 +71,7 @@ function checkIfOkay(text) {
         var ind = fir.indexOf(ch,ind + 1)
         if (ind != -1) {
             fo = 0;
+            index = i;
             watch = list[ind].word
             seq = 1;
         }
@@ -73,5 +79,6 @@ function checkIfOkay(text) {
         
         
     }
-    return true
+    return false
+}
 }
