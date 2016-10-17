@@ -2,6 +2,7 @@
 const StringBuild = require('StringBuild.js')
 const list = JSON.parse(require('fs').readFileSync('./badwords.json',"utf8"))
 
+
 function escape(text) {
     
     var keys = "q w e r t y u i o p a s d f g h j k l ; ' z x c v b n m"
@@ -25,7 +26,7 @@ if (k.indexOf(char) != -1 && (text.charAt(i-1) != char || map[char])) newtext.ap
     return newtext.toString()
 }
 function checkIfOkay(text) { 
-    var lib = badtext.split(",")
+    
     var watch = "";
     var seq = 0;
     var chance = 3;
@@ -36,7 +37,7 @@ function checkIfOkay(text) {
     text = escape(text)
     var fir = []
     
-    for (var i = 0; i < lib.length; i ++) fir.push(lib[i].charAt(0))
+    for (var i = 0; i < list.length; i ++) fir.push(list[i].word.charAt(0))
     for (var i = 0; i < text.length; i ++) {
         var ch = text.charAt(i)
        if (watch) {
@@ -65,7 +66,7 @@ function checkIfOkay(text) {
         var ind = fir.indexOf(ch,ind + 1)
         if (ind != -1) {
             fo = 0;
-            watch = lib[ind]
+            watch = list[ind].word
             seq = 1;
         }
     
