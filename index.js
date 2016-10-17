@@ -35,8 +35,18 @@ checkText(text) {
  var a = this.checkProfanity(text)   
     
 }
-    checkProfanity(text) {
+    checkPermutations(text) {
         
+    }
+    checkProfanity(text) {
+        var lis = [];
+        list.forEach((item)=>{
+          var ind = text.indexOf(item.word);
+            if (ind == -1) return;
+            return {index: ind,word:item.word}
+            
+        })
+        return false
         
     }
 checkProfanity1(text) { 
