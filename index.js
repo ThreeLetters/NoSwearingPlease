@@ -1,6 +1,6 @@
 "use strict"
 const StringBuild = require('StringBuild.js')
-
+const list = JSON.parse(require('fs').readFileSync('./badwords.json',"utf8"))
 
 function escape(text) {
     
