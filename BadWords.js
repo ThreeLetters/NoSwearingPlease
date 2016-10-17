@@ -9,7 +9,7 @@
   word: "bitch",
   msg: "the B word",
   permut: "b*tch,bi*ch",
-  replace: "*****:
+  replace: "*****"
   }
   
   
