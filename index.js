@@ -1,17 +1,7 @@
-var badtext = "fuck,bitch,dick,penis,cunt";
+"use strict"
+const StringBuild = require('StringBuild.js')
 
-function StringBuild(string) {
-    this.d = [];
-    
-}
-        StringBuild.prototype.append = function(text) {
-            this.d.push(text)
-            
-        }
-        StringBuild.prototype.toString = function() {
-            return this.d.join("")
-            
-        }
+
 function escape(text) {
     
     var keys = "q w e r t y u i o p a s d f g h j k l ; ' z x c v b n m"
