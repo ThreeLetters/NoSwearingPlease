@@ -1,33 +1,33 @@
 [
   { 
-  word: "fuck",
-  msg: "the F word",
-  permut: "f*ck,fu*k",
-  replace: "****"
+  "word": "fuck",
+  "msg": "the F word",
+  "permut": "f*ck,fu*k",
+  "replace": "****"
   },
   {
-  word: "bitch",
-  msg: "the B word",
-  permut: "b*tch,bi*ch",
-  replace: "*****"
+  "word": "bitch",
+  "msg": "the B word",
+  "permut": "b*tch,bi*ch",
+  "replace": "*****"
   },
   {
-  word: "nigger",
-  msg: "the N word",
-  permut: "nigg*",
-  replace: "******"
+  "word": "nigger",
+  "msg": "the N word",
+  "permut": "nigg*",
+  "replace": "******"
   
   },
   {
-  word: "dick",
-  msg: "the D word",
-  permut: "di*k,dic",
-  replace:"****"
+  "word": "dick",
+  "msg": "the D word",
+  "permut": "di*k,dic",
+  "replace":"****"
   },
   {
-   word: "cunt",
-    msg: "the C word",
-    replace: "****"
+   "word": "cunt",
+    "msg": "the C word",
+    "replace": "****"
     
   }
   
