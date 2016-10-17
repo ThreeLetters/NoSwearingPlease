@@ -29,7 +29,17 @@ if (k.indexOf(char) != -1 && (text.charAt(i-1) != char || map[char])) newtext.ap
     
     return newtext.toString()
 }
-checkIfOkay(text) { 
+checkText(text) {
+    
+    
+ var a = this.checkProfanity(text)   
+    
+}
+    checkProfanity(text) {
+        
+        
+    }
+checkProfanity1(text) { 
     
     var watch = "";
     var seq = 0;
