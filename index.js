@@ -49,7 +49,16 @@ checkText(text) {
         return false
         
     }
-checkProfanity1(text) { 
+    replaceProfanity(text) {
+         var lis = [];
+    
+        list.forEach((item)=>{
+      text = text.replace(new RegExp("/" + item + "/g"))
+            
+        })
+        
+    }
+checkProfanityAdv(text) { 
     
     var watch = "";
     var seq = 0;
