@@ -1,5 +1,5 @@
-var hardSounds = "b,c,d,f,g,h,j,k,m,n,p,q,s,t,u,v,w,x,y,z".split(",")
-var modifyingSounds = "l,r".split(",")
+var hardSounds = "b,c,d,f,g,h,j,k,p,q,s,t,u,v,w,x,z".split(",")
+var modifyingSounds = "l,r,y,m,n".split(",") // had and hand makes different sounds
 
 var dict = {
     "a": ["á", "â", "ã", "à"],
@@ -34,7 +34,7 @@ for (var swear in file) {
 }
 
 list.sort(function (a, b) {
-    return b.word.length - a.word.length;
+    return a.word.length - b.word.length;
 })
 
 function escape(text) { // Removes non-letters and duplicated
@@ -50,7 +50,8 @@ function escape(text) { // Removes non-letters and duplicated
         g: true,
         l: true,
         s: true,
-        p: true
+        p: true,
+        s: true
     }
 
 
@@ -59,10 +60,11 @@ function escape(text) { // Removes non-letters and duplicated
     text = text.map((char) => {
         return k.indexOf(char) != -1 ? char : " ";
     })
+
     var posmap = [];
     var lastException = false;
     return [text.filter((char, i) => {
-        if (text[i - 1] != char || (exceptions[char] && text[i - 2] != char)) {
+        if ((text[i - 1] != char || (exceptions[char] && text[i - 2] != char))) {
 
             posmap.push(i);
             return true;
@@ -72,10 +74,10 @@ function escape(text) { // Removes non-letters and duplicated
     }).join(""), posmap];
 }
 var vowels = [
-    "a", "e", "i", "o", "u"
+    "a", "e", "i", "o", "u" // , "y" - Y only sometimes
 ]
 var combinedHSounds = [
-    "c", "t"
+    "c", "t", "s"
 ]
 
 function isVowel(char) {
@@ -92,7 +94,8 @@ function isModifying(char) {
 
 var swapTable = {
     o: ["a"],
-    u: ["o"]
+    u: ["o"],
+    i: ["e"]
 }
 
 function canSwapVowel(from, to) {
@@ -124,7 +127,6 @@ module.exports = function check(input) {
     var t = escape(input.toLowerCase());
     var text = convert(t[0]);
     var posmap = t[1];
-
     var deviations = 0;
 
     var fir = []; // List of first characters of swear words
@@ -137,24 +139,28 @@ module.exports = function check(input) {
         var ch = text.charAt(i)
         if (watch) {
             var c = watch.word.charAt(seq)
-            //console.log(watch.word, ch, c, watch.word.charAt(seq + 1))
+            // if (watch.word == "kill") console.log(watch.word, ch, c, watch.word.charAt(seq + 1))
             if (ch == c || (seq < watch.word.length && (
                         (c == "h" && combinedHSounds.indexOf(watch.word.charAt(seq - 1)) == -1) || // Silent h can be removed
                         (isVowel(c) && (!isVowel(ch) || canSwapVowel(c, ch)) && !isModifying(ch))) && // Vowels can be removed or swapped, if its not a modifier like r and l
                     ch == watch.word.charAt(seq + 1))) {
-                seq++;
+
+
                 if (ch != c ||
-                    (watch.word.charAt(seq) === c && text.charAt(i + 1) != c) // Double letters can be removed
+                    (watch.word.charAt(seq + 1) === c && text.charAt(i + 1) != c) // Double letters can be removed
                 ) {
+                    // console.log(watch.word, ch, c, watch.word.charAt(seq + 1))
                     co++;
                     deviations++;
-                    if (co == 1) fo++;
+                    // if (co == 1) fo++;
                     seq++;
                 }
+                seq++;
                 co = 0;
                 if (seq >= watch.word.length) {
 
                     if (
+                        (!isModifying(text.charAt(i)) || !isHard(text.charAt(i + 1))) && // if char is not ending with l,r but has a consonent at the end
                         (i + 1 >= text.length || !isVowel(text.charAt(i + 1))) && // Next char must not be vowel
                         countSyllables(text.substring(index, i + 1)) <= countSyllables(watch.word) // Syllables must not be less than text
                     ) {
@@ -174,7 +180,8 @@ module.exports = function check(input) {
             } else
             if (co >= chance || fo >= nonchance || // Stop when deviations are too big
                 isModifying(ch) || isModifying(c) || // If the deviations are due to modifiers (r and l), then stop
-                (isVowel(c) && isVowel(ch) && !canSwapVowel(c, ch)) // Stop if unswappable vowels
+                (isVowel(c) && isVowel(ch) && !canSwapVowel(c, ch)) || // Stop if unswappable vowels
+                (isVowel(c) && isHard(ch))
             ) {
                 watch = null;
                 i = index - 1;
@@ -183,14 +190,14 @@ module.exports = function check(input) {
             } else {
                 co++;
                 deviations++;
-                if (co == 1) fo++;
+                // if (co == 1) fo++;
             }
             if (i + 1 >= text.length) {
                 watch = null;
                 fo = co = 0;
                 i = index - 1;
             }
-        } else if (i == 0 || text.charAt(i - 1) == " ") {
+        } else if (i == 0 || text.charAt(i - 1) == " " || (!isVowel(text.charAt(i - 1)) && isHard(text.charAt(i)))) { // 
             ind = fir.indexOf(ch, ind + 1)
             if (ind != -1) {
                 fo = 0;
@@ -202,7 +209,7 @@ module.exports = function check(input) {
         }
     }
     detected.sort((a, b) => {
-        return a.deviations == b.deviations ? b.word.length - a.word.length : a.deviations - b.deviations
-    })
+        return a.deviations !== b.deviations ? a.deviations - b.deviations : b.word.length - a.word.length;
+    });
     return detected;
 }
