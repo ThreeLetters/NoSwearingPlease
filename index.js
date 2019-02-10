@@ -150,7 +150,7 @@ module.exports = function check(input) {
     var posmap = t[1];
     var deviations = 0;
 
-    console.log(text)
+    //console.log(text)
     var fir = []; // List of first characters of swear words
 
     for (var i = 0; i < list.length; i++) fir.push(list[i].word.charAt(0));
@@ -162,7 +162,7 @@ module.exports = function check(input) {
         if (watch) {
 
             var c = watch.word.charAt(seq)
-            console.log(watch.word, ch, c, watch.word.charAt(seq + 1))
+            //console.log(watch.word, ch, c, watch.word.charAt(seq + 1))
             if (ch == c || (seq < watch.word.length && (
                         (c == "h" && combinedHSounds.indexOf(watch.word.charAt(seq - 1)) == -1) || // Silent h can be removed
                         (isVowel(c) && (!isVowel(ch) || canSwapVowel(c, ch)) && !isModifying(ch))) && // Vowels can be removed or swapped, if its not a modifier like r and l
