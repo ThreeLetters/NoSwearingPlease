@@ -99,6 +99,17 @@ var vowels = [
 var combinedHSounds = [
     "c", "t", "s", "w"
 ]
+var distinctCombinedVowels = {
+    a: ["o", "e"],
+    i: ["a", "e", "o", "u"],
+    e: ["i"],
+    o: ["e", "o"],
+    u: ["a", "o"]
+}
+
+function vowelDistinct(last, first) {
+    return distinctCombinedVowels[last].indexOf(first) != -1;
+}
 
 function isVowel(char) {
     return char == "a" || char == "e" || char == "i" || char == "o" || char == "u";
@@ -115,7 +126,7 @@ function isModifying(char) {
 var swapTable = {
     o: ["a"],
     u: ["o"],
-    i: ["e"]
+    i: ["e", "a"]
 }
 
 function canSwapVowel(from, to) {
@@ -165,7 +176,7 @@ module.exports = function check(input) {
             //console.log(watch.word, ch, c, watch.word.charAt(seq + 1))
             if (ch == c || (seq < watch.word.length && (
                         (c == "h" && combinedHSounds.indexOf(watch.word.charAt(seq - 1)) == -1) || // Silent h can be removed
-                        (isVowel(c) && (!isVowel(ch) || canSwapVowel(c, ch)) && !isModifying(ch))) && // Vowels can be removed or swapped, if its not a modifier like r and l
+                        (isVowel(c) && !vowelDistinct(c, watch.word.charAt(seq - 1)) && (!isVowel(ch) || canSwapVowel(c, ch)) && !isModifying(ch))) && // Vowels can be removed or swapped, if its not swapped with a modifier like r and l, and if the vowel is not combined
                     ch == watch.word.charAt(seq + 1))) {
 
 
@@ -204,6 +215,7 @@ module.exports = function check(input) {
             if (co >= chance || fo >= nonchance || // Stop when deviations are too big
                 isModifying(ch) || isModifying(c) || // If the deviations are due to modifiers (r and l), then stop
                 (isVowel(c) && isVowel(ch) && !canSwapVowel(c, ch)) || // Stop if unswappable vowels
+                (isVowel(c) && vowelDistinct(c, watch.word.charAt(seq - 1))) || // Stop if important vowel is missing
                 (isVowel(c) && isHard(ch))
             ) {
                 watch = null;

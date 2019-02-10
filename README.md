@@ -1,5 +1,50 @@
 # NoSwearingPlease
-An advanced profanity filter
+An advanced profanity filter based on English phonetics (how stuff sounds). For example, fck will get caught as fuck, but frck will not. Shat or shet will be caught as shit, but not shot.
+
+* Tells you what swears and where they are used in a message
+* Very resistant to filter bypassing attempts. Deviations to words will be caught and reported.
+* Words with special characters can get caught (EG: ⓕ*ⓒⓚ)
+* Words with certain deviations will get caught (EG: shat -> shit)
+
+### Usage
+
+```js
+var checker = require("noswearing");
+var result = checker("This f*cking filter is the best shat I have ever seen");
+
+/*
+[ { original: 'shat', // Original word in message
+    word: 'shat', // Word in database
+    deviations: 0, // Number of deviations
+    info: 2, // 0 = not very offensive, 1 = maybe, 2 = profane
+    start: 32, // Start index of swear in original message
+    end: 36 }, // End index of swear in original message
+  { original: 'f*cking',
+    word: 'fucking',
+    deviations: 2,
+    info: 2,
+    start: 5,
+    end: 12 },
+  { original: 'shat',
+    word: 'shit',
+    deviations: 2,
+    info: 1,
+    start: 32,
+    end: 36 },
+  { original: 'f*c',
+    word: 'fuc',
+    deviations: 2,
+    info: 2,
+    start: 5,
+    end: 8 },
+  { original: 'shat',
+    word: 'shhit',
+    deviations: 3,
+    info: 2,
+    start: 32,
+    end: 36 } ]
+*/
+```
 
 ## Data
 Data is from Cuss - https://github.com/words/cuss
