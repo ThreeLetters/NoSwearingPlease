@@ -1,8 +1,34 @@
+var hardSounds = "b,c,d,f,g,h,j,k,m,n,p,q,s,t,u,v,w,x,y,z".split(",")
+var modifyingSounds = "l,r".split(",")
+
+var dict = {
+    "a": ["á", "â", "ã", "à"],
+    "c": ["ç"],
+    "e": ["é", "ê"],
+    "i": ["í"],
+    "o": ["ó", "ô", "õ", "ú"],
+    "u": ["ú", "ü"],
+    "n": ["ñ"]
+}
+var convertMap = new Map();
+for (var to in dict) {
+    dict[to].forEach((item) => {
+        convertMap.set(item, to)
+    })
+}
+
+function convert(str) {
+    return str.split("").map((char) => {
+        return convertMap.has(char) ? convertMap.get(char) : char;
+    }).join('')
+}
+
 var file = JSON.parse(require("fs").readFileSync(__dirname + "/swears.json", "utf8"));
 var list = [];
 for (var swear in file) {
     list.push({
-        word: swear.toLowerCase(),
+        word: convert(swear.toLowerCase()),
+        wordOriginal: swear,
         info: file[swear]
     });
 }
@@ -10,9 +36,6 @@ for (var swear in file) {
 list.sort(function (a, b) {
     return b.word.length - a.word.length;
 })
-
-var hardSounds = "b,c,d,f,g,h,j,k,m,n,p,q,s,t,u,v,w,x,y,z".split(",")
-var modifyingSounds = "l,r".split(",")
 
 function escape(text) { // Removes non-letters and duplicated
 
@@ -30,7 +53,10 @@ function escape(text) { // Removes non-letters and duplicated
         p: true
     }
 
-    text = text.split("").map((char) => {
+
+    text = text.split("")
+
+    text = text.map((char) => {
         return k.indexOf(char) != -1 ? char : " ";
     })
     var posmap = [];
@@ -45,6 +71,9 @@ function escape(text) { // Removes non-letters and duplicated
         }
     }).join(""), posmap];
 }
+var vowels = [
+    "a", "e", "i", "o", "u"
+]
 
 function isVowel(char) {
     return char == "a" || char == "e" || char == "i" || char == "o" || char == "u";
@@ -89,8 +118,10 @@ module.exports = function check(input) {
     var ind = -1;
 
     var t = escape(input.toLowerCase());
-    var text = t[0];
+    var text = convert(t[0]);
     var posmap = t[1];
+
+    var deviations = 0;
 
     var fir = []; // List of first characters of swear words
 
@@ -107,6 +138,7 @@ module.exports = function check(input) {
                 seq++;
                 if (ch != c) {
                     co++;
+                    deviations++;
                     if (co == 1) fo++;
                     seq++;
                 }
@@ -116,7 +148,8 @@ module.exports = function check(input) {
                     if ((i + 1 >= text.length || text.charAt(i + 1) == " ") && countSyllables(text.substring(index, i + 1)) <= countSyllables(watch.word)) {
                         detected.push({
                             original: input.substring(posmap[index], posmap[i] + 1),
-                            word: watch.word,
+                            word: watch.wordOriginal,
+                            deviations: deviations,
                             info: watch.info,
                             start: posmap[index],
                             end: posmap[i] + 1
@@ -134,6 +167,7 @@ module.exports = function check(input) {
                 co = 0;
             } else {
                 co++;
+                deviations++;
                 if (co == 1) fo++;
             }
             if (i + 1 >= text.length) {
@@ -147,6 +181,7 @@ module.exports = function check(input) {
                 fo = 0;
                 index = i;
                 watch = list[ind];
+                deviations = 0;
                 seq = 1;
             }
         }
