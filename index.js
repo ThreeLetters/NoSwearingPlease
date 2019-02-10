@@ -177,6 +177,7 @@
                     //console.log(watch.word, ch, c, watch.word.charAt(seq + 1))
                     if (ch == c || (seq < watch.word.length && (
                                 (c == "t" && watch.word.charAt(seq + 1) == "c" && ch == "c" && text.charAt(i + 1) == "h") || // Optional T - like bich for bitch
+                                (c == "c" && watch.word.charAt(seq + 1) == "k" && ch == "k") || // Optional C - like fuk for fuck
                                 (c == "h" && combinedHSounds.indexOf(watch.word.charAt(seq - 1)) == -1) || // Silent h can be removed
                                 (isVowel(c) && !vowelDistinct(c, watch.word.charAt(seq - 1)) && (isVowel(ch) ? canSwapVowel(c, ch) : isHard(ch)))) && // Vowels can be removed or swapped, if its swapped with hard sounds
                             ch == watch.word.charAt(seq + 1))) {
@@ -196,8 +197,8 @@
                         if (seq >= watch.word.length) {
 
                             if (
-                                (!isModifying(text.charAt(i)) || !isHard(text.charAt(i + 1))) && // if char is not ending with l,r but has a consonent at the end
-                                (i + 1 >= text.length || !isVowel(text.charAt(i + 1))) && // Next char must not be vowel
+                                (!isModifying(text.charAt(i)) || !isHard(text.charAt(i + 1)) || countSyllables(watch.word) > 1) && // help vs erboy
+                                !isVowel(text.charAt(i + 1)) && // Next char must not be vowel - hello 
                                 countSyllables(text.substring(index, i + 1)) <= countSyllables(watch.word) // Syllables must not be less than text
                             ) {
                                 detected.push({
