@@ -1,6 +1,7 @@
 (function (scope) {
 
     var hardSounds = "b,c,d,f,g,h,j,k,p,q,s,t,u,v,w,x,z".split(",")
+    var preModifiers = "s".split(",")
     var modifyingSounds = "l,r,y,m,n".split(",") // had and hand makes different sounds
     var dict = {
         "a": ["á", "â", "ã", "à", "ᗩ", "A", "ⓐ", "Ⓐ", "α", "͏", "₳", "ä", "Ä", "Ꮧ", "λ", "Δ", "Ḁ", "Ꭺ", "ǟ", "̾", "ａ", "Ａ", "ᴀ", "ɐ", "🅐", "𝐚", "𝐀", "𝘢", "𝘈", "𝙖", "𝘼", "𝒶", "𝓪", "𝓐", "𝕒", "𝔸", "𝔞", "𝔄", "𝖆", "𝕬", "🄰", "🅰", "𝒜", "𝚊", "𝙰", "ꍏ"],
@@ -233,7 +234,9 @@
                         fo = co = 0;
                         i = index - 1;
                     }
-                } else if (i == 0 || text.charAt(i - 1) == " " || ((text.charAt(i) != "h" || combinedHSounds.indexOf(text.charAt(i - 1)) == -1) && !isVowel(text.charAt(i - 1)) && isHard(text.charAt(i)))) { // 
+                } else if (i == 0 || text.charAt(i - 1) == " " ||
+                    ((text.charAt(i) != "h" || combinedHSounds.indexOf(text.charAt(i - 1)) == -1) &&
+                        !isVowel(text.charAt(i - 1)) && preModifiers.indexOf(text.charAt(i - 1)) == -1 && isHard(text.charAt(i)))) { // 
                     ind = fir.indexOf(ch, ind + 1)
                     if (ind != -1) {
                         fo = 0;
