@@ -155,7 +155,7 @@ module.exports = function check(input) {
                 if (seq >= watch.word.length) {
 
                     if (
-                        (i + 1 >= text.length || text.charAt(i + 1) == " ") && // Must be end of word
+                        (i + 1 >= text.length || !isVowel(text.charAt(i + 1))) && // Next char must not be vowel
                         countSyllables(text.substring(index, i + 1)) <= countSyllables(watch.word) // Syllables must not be less than text
                     ) {
                         detected.push({
