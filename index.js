@@ -1,6 +1,14 @@
-var list = JSON.parse(require("fs").readFileSync(__dirname + "/swears.json", "utf8"));
+var file = JSON.parse(require("fs").readFileSync(__dirname + "/swears.json", "utf8"));
+var list = [];
+for (var swear in file) {
+    list.push({
+        word: swear,
+        level: file[swear]
+    });
+}
+
 list.sort(function(a, b) {
-    return b.length - a.length;
+    return b.word.length - a.word.length;
 })
 
 function escape(text) { // Removes non-letters and duplicated
@@ -30,7 +38,7 @@ function escape(text) { // Removes non-letters and duplicated
 
 module.exports = function check(text) {
 
-    var watch = ""; // Possible swear
+    var watch = null; // Possible swear
     var seq = 0; // length of detection i guess?
     var chance = 3; // Max deviations in letter position of swear (eg: fucABCk will be caught, but not fucABCDk)
     var nonchance = 3 // Dont know. something about max deviations (eg: nAiBgCger will get caught, but not nAiBgCgDer)
@@ -45,22 +53,20 @@ module.exports = function check(text) {
 
     var fir = []; // List of first characters of swear words
 
-    for (var i = 0; i < list.length; i++) fir.push(list[i].charAt(0));
+    for (var i = 0; i < list.length; i++) fir.push(list[i].word.charAt(0));
 
     var detected = [];
 
     for (var i = 0; i < text.length; i++) {
         var ch = text.charAt(i)
-        if (watch.length) {
-            var c = watch.charAt(seq)
-
-
+        if (watch) {
+            var c = watch.word.charAt(seq)
             if (ch == c) {
                 seq++;
                 co = 0;
-                if (seq >= watch.length) {
+                if (seq >= watch.word.length) {
                     detected.push({
-                        word: watch,
+                        detected: watch,
                         start: index,
                         end: i + 1
                     });
@@ -69,7 +75,7 @@ module.exports = function check(text) {
                 }
             } else
             if (co >= chance || fo >= nonchance) {
-                watch = "";
+                watch = null;
                 i = index;
                 fo = 0;
                 co = 0;
