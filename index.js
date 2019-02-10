@@ -1,6 +1,6 @@
 (function (scope) {
 
-    var hardSounds = "b,c,d,f,g,h,j,k,p,q,s,t,u,v,w,x,z".split(",")
+    var hardSounds = "b,c,d,f,g,j,k,p,q,s,t,u,v,w,x,z".split(",")
     var preModifiers = "s".split(",")
     var modifyingSounds = "l,r,y,m,n".split(",") // had and hand makes different sounds
     var dict = {
@@ -177,7 +177,7 @@
                     //console.log(watch.word, ch, c, watch.word.charAt(seq + 1))
                     if (ch == c || (seq < watch.word.length && (
                                 (c == "h" && combinedHSounds.indexOf(watch.word.charAt(seq - 1)) == -1) || // Silent h can be removed
-                                (isVowel(c) && !vowelDistinct(c, watch.word.charAt(seq - 1)) && (!isVowel(ch) || canSwapVowel(c, ch)) && !isModifying(ch))) && // Vowels can be removed or swapped, if its not swapped with a modifier like r and l, and if the vowel is not combined
+                                (isVowel(c) && !vowelDistinct(c, watch.word.charAt(seq - 1)) && (isVowel(ch) ? canSwapVowel(c, ch) : isHard(ch)))) && // Vowels can be removed or swapped, if its swapped with hard sounds
                             ch == watch.word.charAt(seq + 1))) {
 
 
