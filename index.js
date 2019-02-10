@@ -140,11 +140,12 @@ module.exports = function check(input) {
             //console.log(watch.word, ch, c, watch.word.charAt(seq + 1))
             if (ch == c || (seq < watch.word.length && (
                         (c == "h" && combinedHSounds.indexOf(watch.word.charAt(seq - 1)) == -1) || // Silent h can be removed
-                        watch.word.charAt(seq - 1) === c || // Double letters like ll can become l
                         (isVowel(c) && (!isVowel(ch) || canSwapVowel(c, ch)) && !isModifying(ch))) && // Vowels can be removed or swapped, if its not a modifier like r and l
                     ch == watch.word.charAt(seq + 1))) {
                 seq++;
-                if (ch != c) {
+                if (ch != c ||
+                    (watch.word.charAt(seq) === c && text.charAt(i + 1) != c) // Double letters can be removed
+                ) {
                     co++;
                     deviations++;
                     if (co == 1) fo++;
