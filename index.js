@@ -97,7 +97,7 @@ var vowels = [
     "a", "e", "i", "o", "u" // , "y" - Y only sometimes
 ]
 var combinedHSounds = [
-    "c", "t", "s"
+    "c", "t", "s", "w"
 ]
 
 function isVowel(char) {
@@ -170,7 +170,7 @@ module.exports = function check(input) {
 
 
                 if (ch != c ||
-                    (watch.word.charAt(seq + 1) === c && text.charAt(i + 1) != c) // Double letters can be removed
+                    (watch.word.charAt(seq + 1) === c && text.charAt(i + 1) != c && c != "s") // Double letters can be removed if its not s. Because "as" doesnt dount like "ass"
                 ) {
                     // console.log(watch.word, ch, c, watch.word.charAt(seq + 1))
                     co++;
@@ -220,7 +220,7 @@ module.exports = function check(input) {
                 fo = co = 0;
                 i = index - 1;
             }
-        } else if (i == 0 || text.charAt(i - 1) == " " || (!isVowel(text.charAt(i - 1)) && isHard(text.charAt(i)))) { // 
+        } else if (i == 0 || text.charAt(i - 1) == " " || ((text.charAt(i) != "h" || combinedHSounds.indexOf(text.charAt(i - 1)) == -1) && !isVowel(text.charAt(i - 1)) && isHard(text.charAt(i)))) { // 
             ind = fir.indexOf(ch, ind + 1)
             if (ind != -1) {
                 fo = 0;
