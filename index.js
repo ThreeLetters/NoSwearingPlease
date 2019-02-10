@@ -176,6 +176,7 @@
                     var c = watch.word.charAt(seq)
                     //console.log(watch.word, ch, c, watch.word.charAt(seq + 1))
                     if (ch == c || (seq < watch.word.length && (
+                                (c == "t" && watch.word.charAt(seq + 1) == "c" && ch == "c" && text.charAt(i + 1) == "h") || // Optional T - like bich for bitch
                                 (c == "h" && combinedHSounds.indexOf(watch.word.charAt(seq - 1)) == -1) || // Silent h can be removed
                                 (isVowel(c) && !vowelDistinct(c, watch.word.charAt(seq - 1)) && (isVowel(ch) ? canSwapVowel(c, ch) : isHard(ch)))) && // Vowels can be removed or swapped, if its swapped with hard sounds
                             ch == watch.word.charAt(seq + 1))) {
