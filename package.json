@@ -1,6 +1,6 @@
 {
   "name": "noswearing",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Advanced Profanity Filter",
   "main": "index.js",
   "scripts": {
