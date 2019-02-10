@@ -216,7 +216,8 @@
                         isModifying(ch) || isModifying(c) || // If the deviations are due to modifiers (r and l), then stop
                         (isVowel(c) && isVowel(ch) && !canSwapVowel(c, ch)) || // Stop if unswappable vowels
                         (isVowel(c) && vowelDistinct(c, watch.word.charAt(seq - 1))) || // Stop if important vowel is missing
-                        (isVowel(c) && isHard(ch))
+                        (isVowel(c) && isHard(ch)) ||
+                        (isHard(c) && isVowel(ch))
                     ) {
                         watch = null;
                         i = index - 1;
