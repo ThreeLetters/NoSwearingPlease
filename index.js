@@ -55,7 +55,7 @@
     }
 
     var swapTable = {
-        o: ["a"],
+        //  o: ["a"],
         u: ["o"],
         i: ["e", "a"]
     }
@@ -227,6 +227,7 @@
                             if (
                                 (!isModifying(text[i]) || !isHard(text[i + 1]) || countSyllables(word) > 1) && // help vs erboy
                                 !isVowel(text[i + 1]) && // Next char must not be vowel - hello 
+                                (!isVowel(text[i]) || !isHard(text[i + 1])) && // tested is not teste
                                 countSyllables(text.substring(index, i + 1)) <= countSyllables(word) // Syllables must not be less than text
                             ) {
                                 detected.push({
@@ -309,7 +310,9 @@
                     }
                 }
             }
-
+            detected.sort((a, b) => {
+                return a.original.length !== b.original.length ? b.original.length - a.original.length : a.deviations - b.deviations
+            })
             return detected;
         }
     }
