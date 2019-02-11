@@ -93,7 +93,6 @@
         return match ? match.length : 0;
     }
 
-
     function canSkip(text, word, wi, i) {
 
         if (word[wi] == text[i]) return 1; // If the same charactor, return true;
@@ -116,14 +115,14 @@
 
         // Silent h can be skipped
         if (word[wi] == "h" && combinedHSounds.indexOf(word[wi - 1]) == -1) {
-            return 2;
+            return (wi + 1 >= word.length || canSkip(text, word, wi + 1, i)) ? 2 : 0;
         }
 
         if (isVowel(word[wi]) && !vowelDistinct(word[wi], word[wi - 1]) && !vowelDistinct(word[wi + 1], word[wi])) { // Vowels can be replaced/ommited only if they arnt combined like oo
             if (isVowel(text[i])) {
                 return canSwapVowel(word[wi], text[i]) ? 1 : 0; // If vowel is swappable with another, like e->i
             } else {
-                return (isHard(text[i]) && (wi + 1 >= word.length || canSkip(text, word, wi + 1, i))) ? 2 : 0; // Vowel can be ommited sometimes
+                return (isHard(text[i]) && wi + 1 < word.length && canSkip(text, word, wi + 1, i)) ? 2 : 0; // Vowel can be ommited sometimes
             }
         }
         return 0;
