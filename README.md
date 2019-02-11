@@ -30,7 +30,7 @@ var result = checker("This Ⓕ*₵𝓴ing filter is the best shat I have ever se
 
 ### Disclaimer about Phonetics
 
-Lots of things can go wrong with phonetics, especially for a filter as simple as this. Usually, phonetic filters are much more advanced, with things like NLP and machine learning. But, I didnt have the time to do that. I only made this filter to be a little better than all the FREE filters out there. In addition, I am not an English expert. Instead, I took a different approach, and leaned more towards experimentation. But, due to that, I can't fix a problem that I dont know of. And so, there might be some cases where this filter will just be plain wrong. But, if you find something like that, please tell me so I can fix it.
+Lots of things can go wrong with phonetics, especially for a filter as simple as this. Usually, phonetic filters are much more advanced, with things like NLP and machine learning. However, I didnt have the time or the desire to do that since I only made this filter to be a little better than all the FREE filters out there. In addition, I am just a programmer, not an English expert. When making this, I took a different approach, and leaned more towards experimentation. Due to that there might be some cases where this filter will just be plain wrong. But, if you find something like that, please tell me so I can fix it. I can't fix a problem I dont know of.
 
 ### Disclaimer about Data
 Data is from Cuss - https://github.com/words/cuss
