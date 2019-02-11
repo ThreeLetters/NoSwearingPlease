@@ -185,6 +185,7 @@
                     text[i + 1] == "h") { // tch can become ch
                     return 2;
                 }
+
                 if (word[wi] == "c" && // Looking for c
                     word[wi + 1] == "k" &&
 
@@ -192,7 +193,10 @@
                     return 2;
                 }
 
-
+                // Silent h can be skipped
+                if (word[wi] == "h" && combinedHSounds.indexOf(word[wi - 1]) == -1) {
+                    return 2;
+                }
 
                 if (isVowel(word[wi]) && !vowelDistinct(word[wi], word[wi - 1]) && !vowelDistinct(word[wi + 1], word[wi])) { // Vowels can be replaced/ommited only if they arnt combined like oo
                     if (isVowel(text[i])) {
@@ -207,24 +211,21 @@
             for (var i = 0; i < text.length; i++) {
                 if (watch) {
                     var word = watch.word;
-                    var skipAmount = canSkip(text, word, wi, i);
-                    // console.log(word, text[i], word[i], word[wi + 1], canSkip(text, word, wi, i))
+                    var skipMode = canSkip(text, word, wi, i);
+                    //console.log(word, text[i], word[i], word[wi + 1], canSkip(text, word, wi, i))
                     if (
-                        skipAmount
+                        skipMode
                     ) {
-                        if (word[i] != text[i]) {
-                            deviations++;
-                        }
+
                         if (wi + 1 < word.length && word[wi] == word[wi + 1] && text[i + 1] != word[wi] && !isHard(word[wi])) {
                             if (wi + 2 >= word.length || canSkip(text, word, wi + 2, i + 1)) {
                                 wi++;
                                 deviations++;
                             }
                         }
-                        wi += skipAmount;
+                        wi++;
                         co = 0;
                         if (wi >= word.length) {
-
                             if (
                                 (!isModifying(text[i]) || !isHard(text[i + 1]) || countSyllables(word) > 1) && // help vs erboy
                                 !isVowel(text[i + 1]) && // Next char must not be vowel - hello 
@@ -243,6 +244,9 @@
                             fo = co = 0;
                             i = index - 1;
                         }
+                        if (skipMode == 2) {
+                            i--;
+                        }
                     } else
                     if (co >= chance || // Stop when deviations are too big
                         // If the deviations are due to modifiers (r and l), then stop, ie fork wont be read as fuck because the r modifier will change the sound of the word
@@ -256,7 +260,13 @@
 
                         // Stop if a hard sound and a vowel mixed up
                         (isVowel(word[i]) && isHard(text[i])) ||
-                        (isHard(word[i]) && isVowel(text[i]))
+                        (isHard(word[i]) && isVowel(text[i])) ||
+
+                        // Stop if missing an essential h (sh,th,etc...)
+                        (word[wi] == "h" && combinedHSounds.indexOf(word[wi - 1]) != -1) ||
+                        // Stop if there is an extra essential h
+                        (text[i] == "h" && combinedHSounds.indexOf(text[i - 1]) != -1)
+
                     ) {
                         watch = null;
                         i = index - 1;
