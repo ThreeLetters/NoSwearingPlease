@@ -214,7 +214,7 @@
                     if (
                         skipMode
                     ) {
-
+                        if (word[wi] != text[i]) deviations++;
                         if (wi + 1 < word.length && word[wi] == word[wi + 1] && text[i + 1] != word[wi] && !isHard(word[wi])) {
                             if (wi + 2 >= word.length || canSkip(text, word, wi + 2, i + 1)) {
                                 wi++;

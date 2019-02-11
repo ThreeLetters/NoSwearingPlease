@@ -15,13 +15,13 @@ var result = checker("This Ⓕ*₵𝓴ing filter is the best shat I have ever se
 /*
 [ { original: 'Ⓕ*₵𝓴ing', // Original word in message
     word: 'fucking', // Word in dataset
-    deviations: 1, // Number of deviations
+    deviations: 2, // Number of deviations
     info: 2, // 0 = not very offensive, 1 = maybe, 2 = profane
     start: 5, // Start index of swear in original message
     end: 12 }, // End index of swear in original message
   { original: 'shat',
     word: 'shit',
-    deviations: 0,
+    deviations: 1,
     info: 1,
     start: 32,
     end: 36 } ]
