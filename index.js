@@ -1,8 +1,8 @@
 (function (scope) {
 
     var hardSounds = "b,c,d,f,g,j,k,p,q,s,t,u,v,w,x,z".split(",")
-    var preModifiers = "s".split(",")
-    var modifyingSounds = "l,r,y,m,n".split(",") // had and hand makes different sounds
+    var preModifiers = "s".split(",") // sp
+    var modifyingSounds = "l,r,y,m,n,s".split(",") // had and hand makes different sounds
     var dict = {
         "a": ["á", "â", "ã", "à", "ᗩ", "A", "ⓐ", "Ⓐ", "α", "͏", "₳", "ä", "Ä", "Ꮧ", "λ", "Δ", "Ḁ", "Ꭺ", "ǟ", "̾", "ａ", "Ａ", "ᴀ", "ɐ", "🅐", "𝐚", "𝐀", "𝘢", "𝘈", "𝙖", "𝘼", "𝒶", "𝓪", "𝓐", "𝕒", "𝔸", "𝔞", "𝔄", "𝖆", "𝕬", "🄰", "🅰", "𝒜", "𝚊", "𝙰", "ꍏ"],
         "b": ["ᗷ", "B", "ⓑ", "Ⓑ", "в", "฿", "ḅ", "Ḅ", "Ᏸ", "ϐ", "Ɓ", "ḃ", "Ḃ", "ɮ", "ｂ", "Ｂ", "ʙ", "🅑", "𝐛", "𝐁", "𝘣", "𝘉", "𝙗", "𝘽", "𝒷", "𝓫", "𝓑", "𝕓", "𝔹", "𝔟", "𝔅", "𝖇", "𝕭", "🄱", "🅱", "𝐵", "Ⴆ", "𝚋", "𝙱", "♭"],
@@ -122,7 +122,7 @@
             if (isVowel(text[i])) {
                 return canSwapVowel(word[wi], text[i]) ? 1 : 0; // If vowel is swappable with another, like e->i
             } else {
-                return (isHard(text[i]) && wi + 1 < word.length && canSkip(text, word, wi + 1, i)) ? 2 : 0; // Vowel can be ommited sometimes
+                return (isHard(text[i]) && isHard(word[wi + 1]) && isHard(word[wi - 1]) && word[i + 1] != word[i - 1] && wi + 1 < word.length && canSkip(text, word, wi + 1, i)) ? 2 : 0; // Vowel can be ommited sometimes
             }
         }
         return 0;
@@ -300,7 +300,9 @@
                         !isVowel(text[i - 1]) &&
 
                         // Not a modifier
-                        preModifiers.indexOf(text[i - 1]) == -1 && isHard(text[i]))) { // 
+                        preModifiers.indexOf(text[i - 1]) == -1 &&
+
+                        isHard(text[i]))) { // 
                     ind = fir.indexOf(text[i], ind + 1)
                     if (ind != -1) {
                         index = i;
