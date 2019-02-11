@@ -13,41 +13,29 @@ var checker = require("noswearing");
 var result = checker("This f*cking filter is the best shat I have ever seen");
 
 /*
-[ { original: 'shat', // Original word in message
-    word: 'shat', // Word in database
-    deviations: 0, // Number of deviations
+[ { original: 'f*cking', // Original word in message
+    word: 'fucking', // Word in dataset
+    deviations: 1, // Number of deviations
     info: 2, // 0 = not very offensive, 1 = maybe, 2 = profane
-    start: 32, // Start index of swear in original message
-    end: 36 }, // End index of swear in original message
-  { original: 'f*cking',
-    word: 'fucking',
-    deviations: 2,
-    info: 2,
-    start: 5,
-    end: 12 },
+    start: 5, // Start index of swear in original message
+    end: 12 }, // End index of swear in original message
   { original: 'shat',
     word: 'shit',
-    deviations: 2,
+    deviations: 0,
     info: 1,
-    start: 32,
-    end: 36 },
-  { original: 'f*c',
-    word: 'fuc',
-    deviations: 2,
-    info: 2,
-    start: 5,
-    end: 8 },
-  { original: 'shat',
-    word: 'shhit',
-    deviations: 3,
-    info: 2,
     start: 32,
     end: 36 } ]
 */
 ```
 
-## Data
+### Disclaimer about Phonetics
+
+Lots of things can go wrong with phonetics, especially for a filter as simple as this. Usually, phonetic filters are much more advanced, with things like NLP and machine learning. But, I didnt have the time to do that. I only made this filter to be a little better than all the FREE filters out there. In addition, I am not an English expert. Instead, I took a different approach, and leaned more towards experimentation. But, due to that, I can't fix a problem that I dont know of. And so, there might be some cases where this filter will just be plain wrong. But, if you find something like that, please tell me so I can fix it.
+
+### Disclaimer about Data
 Data is from Cuss - https://github.com/words/cuss
+
+I didnt make it. I did modify some of it though, because the words there arn't very well-rated.
 
 Here is their license:
 
