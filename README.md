@@ -10,10 +10,10 @@ An advanced profanity filter based on English phonetics (how stuff sounds). For 
 
 ```js
 var checker = require("noswearing");
-var result = checker("This f*cking filter is the best shat I have ever seen");
+var result = checker("This Ⓕ*₵𝓴ing filter is the best shat I have ever seen");
 
 /*
-[ { original: 'f*cking', // Original word in message
+[ { original: 'Ⓕ*₵𝓴ing', // Original word in message
     word: 'fucking', // Word in dataset
     deviations: 1, // Number of deviations
     info: 2, // 0 = not very offensive, 1 = maybe, 2 = profane
