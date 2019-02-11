@@ -46,6 +46,9 @@
         u: ["a", "o"]
     }
 
+    function isCombinedH(prev, prev2) {
+        return prev != prev2 && combinedHSounds.indexOf(prev) != -1;
+    }
 
     var convertMap = new Map();
     for (var to in dict) {
@@ -137,7 +140,7 @@
         }
 
         // Silent h can be skipped
-        if (word[wi] == "h" && combinedHSounds.indexOf(word[wi - 1]) == -1) {
+        if (word[wi] == "h" && !isCombinedH(word[wi - 1], word[wi - 2])) {
             return (wi + 1 >= word.length || canSkip(text, word, wi + 1, i)) ? 2 : 0;
         }
 
@@ -288,9 +291,9 @@
                                 (isHard(word[i]) && isVowel(text[i])) ||
 
                                 // Stop if missing an essential h (sh,th,etc...)
-                                (word[wi] == "h" && combinedHSounds.indexOf(word[wi - 1]) != -1) ||
+                                (word[wi] == "h" && isCombinedH(word[wi - 1], word[wi - 2])) ||
                                 // Stop if there is an extra essential h
-                                (text[i] == "h" && combinedHSounds.indexOf(text[i - 1]) != -1)
+                                (text[i] == "h" && isCombinedH(text[i - 1], text[i - 2]))
                             )
                         )
                     ) {
@@ -317,7 +320,7 @@
 
                     (
                         // Not a special h sound
-                        (text[i] != "h" || combinedHSounds.indexOf(text[i - 1]) == -1) &&
+                        (text[i] != "h" || !isCombinedH(text[i - 1], text[i - 2])) &&
 
                         // Not a vowel
                         !isVowel(text[i - 1]) &&
