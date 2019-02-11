@@ -57,7 +57,7 @@
     var swapTable = {
         //  o: ["a"],
         u: ["o"],
-        i: ["e", "a"]
+        i: ["e"]
     }
 
     function canSwapVowel(from, to) {
