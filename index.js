@@ -106,11 +106,34 @@
             return 2;
         }
 
-        if (word[wi] == "c" && // Looking for c
-            word[wi + 1] == "k" &&
-
-            text[i] == "k") { // ck can become k
-            return 2;
+        if (
+            (
+                (
+                    word[wi] == "c" && // Looking for c
+                    word[wi + 1] == "k"
+                ) ||
+                (
+                    word[wi] == "k"
+                ) ||
+                (
+                    word[wi] == "q"
+                ) ||
+                (
+                    word[wi] == "c" &&
+                    word[wi + 1] != "e"
+                )
+            ) &&
+            (
+                text[i] == "k" || // ck can become k
+                text[i] == "q" || // ck can becoe q
+                (
+                    text[i] == "c" && // ck can becoe c
+                    text[i + 1] != "e" // c makes a k sound unless if there is an e
+                )
+            )
+        ) {
+            return (word[wi] == "c" && // Looking for c
+                word[wi + 1] == "k") ? 2 : 1;
         }
 
         // Silent h can be skipped
