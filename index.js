@@ -66,6 +66,7 @@
     }
 
     function vowelDistinct(last, first) {
+        if (!distinctCombinedVowels[last]) return false;
         return distinctCombinedVowels[last].indexOf(first) != -1;
     }
 
@@ -91,6 +92,8 @@
         var match = word.match(/[aeiouy]{1,2}/g);
         return match ? match.length : 0;
     }
+
+
 
     class NoSwearing {
         constructor(swearList) {
@@ -148,7 +151,8 @@
         check(input) {
 
             var watch = null; // Possible swear
-            var seq = 0; // length of detection i guess?
+            //   var wi = 0; // length of detection i guess?
+            var wi = 0; // Watching index;
             var chance = 3; // Max deviations in letter position of swear (eg: fucABCk will be caught, but not fucABCDk)
             var nonchance = 3 // Dont know. something about max deviations (eg: nAiBgCger will get caught, but not nAiBgCgDer)
             var co = 0; // Deviations from swear???
@@ -169,37 +173,62 @@
 
             var detected = [];
 
+            function canSkip(text, word, wi, i) {
+
+                if (word[wi] == text[i]) return 1; // If the same charactor, return true;
+
+                if (word[wi] == "t" &&
+                    word[wi + 1] == "c" &&
+                    word[wi + 2] == "h" &&
+
+                    text[i] == "c" &&
+                    text[i + 1] == "h") { // tch can become ch
+                    return 2;
+                }
+                if (word[wi] == "c" && // Looking for c
+                    word[wi + 1] == "k" &&
+
+                    text[i] == "k") { // ck can become k
+                    return 2;
+                }
+
+
+
+                if (isVowel(word[wi]) && !vowelDistinct(word[wi], word[wi - 1]) && !vowelDistinct(word[wi + 1], word[wi])) { // Vowels can be replaced/ommited only if they arnt combined like oo
+                    if (isVowel(text[i])) {
+                        return canSwapVowel(word[wi], text[i]) ? 1 : 0; // If vowel is swappable with another, like e->i
+                    } else {
+                        return (isHard(text[i]) && (wi + 1 >= word.length || canSkip(text, word, wi + 1, i))) ? 2 : 0; // Vowel can be ommited sometimes
+                    }
+                }
+                return 0;
+            }
+
             for (var i = 0; i < text.length; i++) {
-                var ch = text.charAt(i)
                 if (watch) {
-
-                    var c = watch.word.charAt(seq)
-                    //console.log(watch.word, ch, c, watch.word.charAt(seq + 1))
-                    if (ch == c || (seq < watch.word.length && (
-                                (c == "t" && watch.word.charAt(seq + 1) == "c" && ch == "c" && text.charAt(i + 1) == "h") || // Optional T - like bich for bitch
-                                (c == "c" && watch.word.charAt(seq + 1) == "k" && ch == "k") || // Optional C - like fuk for fuck
-                                (c == "h" && combinedHSounds.indexOf(watch.word.charAt(seq - 1)) == -1) || // Silent h can be removed
-                                (isVowel(c) && !vowelDistinct(c, watch.word.charAt(seq - 1)) && (isVowel(ch) ? canSwapVowel(c, ch) : isHard(ch)))) && // Vowels can be removed or swapped, if its swapped with hard sounds
-                            ch == watch.word.charAt(seq + 1))) {
-
-
-                        if (ch != c ||
-                            (watch.word.charAt(seq + 1) === c && text.charAt(i + 1) != c && c != "s") // Double letters can be removed if its not s. Because "as" doesnt dount like "ass"
-                        ) {
-                            // console.log(watch.word, ch, c, watch.word.charAt(seq + 1))
-                            co++;
+                    var word = watch.word;
+                    var skipAmount = canSkip(text, word, wi, i);
+                    // console.log(word, text[i], word[i], word[wi + 1], canSkip(text, word, wi, i))
+                    if (
+                        skipAmount
+                    ) {
+                        if (word[i] != text[i]) {
                             deviations++;
-                            // if (co == 1) fo++;
-                            seq++;
                         }
-                        seq++;
+                        if (wi + 1 < word.length && word[wi] == word[wi + 1] && text[i + 1] != word[wi] && !isHard(word[wi])) {
+                            if (wi + 2 >= word.length || canSkip(text, word, wi + 2, i + 1)) {
+                                wi++;
+                                deviations++;
+                            }
+                        }
+                        wi += skipAmount;
                         co = 0;
-                        if (seq >= watch.word.length) {
+                        if (wi >= word.length) {
 
                             if (
-                                (!isModifying(text.charAt(i)) || !isHard(text.charAt(i + 1)) || countSyllables(watch.word) > 1) && // help vs erboy
-                                !isVowel(text.charAt(i + 1)) && // Next char must not be vowel - hello 
-                                countSyllables(text.substring(index, i + 1)) <= countSyllables(watch.word) // Syllables must not be less than text
+                                (!isModifying(text[i]) || !isHard(text[i + 1]) || countSyllables(word) > 1) && // help vs erboy
+                                !isVowel(text[i + 1]) && // Next char must not be vowel - hello 
+                                countSyllables(text.substring(index, i + 1)) <= countSyllables(word) // Syllables must not be less than text
                             ) {
                                 detected.push({
                                     original: inputArr.slice(posmap[index], posmap[i] + 1).join(""),
@@ -215,12 +244,19 @@
                             i = index - 1;
                         }
                     } else
-                    if (co >= chance || fo >= nonchance || // Stop when deviations are too big
-                        isModifying(ch) || isModifying(c) || // If the deviations are due to modifiers (r and l), then stop
-                        (isVowel(c) && isVowel(ch) && !canSwapVowel(c, ch)) || // Stop if unswappable vowels
-                        (isVowel(c) && vowelDistinct(c, watch.word.charAt(seq - 1))) || // Stop if important vowel is missing
-                        (isVowel(c) && isHard(ch)) ||
-                        (isHard(c) && isVowel(ch))
+                    if (co >= chance || // Stop when deviations are too big
+                        // If the deviations are due to modifiers (r and l), then stop, ie fork wont be read as fuck because the r modifier will change the sound of the word
+                        isModifying(text[i]) || isModifying(word[i]) ||
+
+                        // Stop if unswappable vowels
+                        (isVowel(word[i]) && isVowel(text[i]) && !canSwapVowel(word[i], text[i])) ||
+
+                        // Stop if any combining vowel is missing. Because pound does not sound like pond
+                        (isVowel(word[i]) && vowelDistinct(word[i], word.charAt(wi - 1))) ||
+
+                        // Stop if a hard sound and a vowel mixed up
+                        (isVowel(word[i]) && isHard(text[i])) ||
+                        (isHard(word[i]) && isVowel(text[i]))
                     ) {
                         watch = null;
                         i = index - 1;
@@ -236,16 +272,15 @@
                         fo = co = 0;
                         i = index - 1;
                     }
-                } else if (i == 0 || text.charAt(i - 1) == " " ||
-                    ((text.charAt(i) != "h" || combinedHSounds.indexOf(text.charAt(i - 1)) == -1) &&
-                        !isVowel(text.charAt(i - 1)) && preModifiers.indexOf(text.charAt(i - 1)) == -1 && isHard(text.charAt(i)))) { // 
-                    ind = fir.indexOf(ch, ind + 1)
+                } else if (i == 0 || text[i - 1] == " " ||
+                    ((text[i] != "h" || combinedHSounds.indexOf(text[i - 1]) == -1) &&
+                        !isVowel(text[i - 1]) && preModifiers.indexOf(text[i - 1]) == -1 && isHard(text[i]))) { // 
+                    ind = fir.indexOf(text[i], ind + 1)
                     if (ind != -1) {
-                        fo = 0;
                         index = i;
                         watch = this.list[ind];
                         deviations = 0;
-                        seq = 1;
+                        wi = 1;
                     }
                 }
             }
