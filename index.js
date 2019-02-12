@@ -275,7 +275,7 @@
                             watch = null;
                             fo = co = 0;
                             i = index - 1;
-                        }
+                        } else
                         if (skipMode == 2) {
                             i--;
                         }
