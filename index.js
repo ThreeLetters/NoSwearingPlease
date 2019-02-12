@@ -157,6 +157,7 @@
     class NoSwearing {
         constructor(swearList) {
             this.list = [];
+            this.trigger = {};
             if (swearList) this.addSwears(swearList)
         }
         convert(str) {
@@ -206,6 +207,17 @@
                     info: swearList[swear]
                 });
             }
+            this.list.sort((a, b) => {
+                return b.word.length - a.word.length;
+            });
+            this.trigger = {};
+
+            for (var i = 0; i < this.list.length; i++) {
+                var char = this.list[i].word.charAt(0);
+                if (!this.trigger[char]) this.trigger[char] = [];
+                this.trigger[char].push(i);
+            }
+
         }
         check(input) {
 
@@ -217,18 +229,13 @@
             var co = 0; // Deviations from swear???
             var index = 0; // Where the swear was detected???
             var fo = 0; // more deviation shit
-            var ind = -1;
+            var ind = 0;
 
             var inputArr = Array.from(input)
             var t = this.escape(this.convert(input));
             var text = t[0];
             var posmap = t[1];
             var deviations = 0;
-
-            //    console.log(text)
-            var fir = []; // List of first characters of swear words
-
-            for (var i = 0; i < this.list.length; i++) fir.push(this.list[i].word.charAt(0));
 
             var detected = [];
 
@@ -329,19 +336,65 @@
                         preModifiers.indexOf(text[i - 1]) == -1 &&
 
                         isHard(text[i]))) { // 
-                    ind = fir.indexOf(text[i], ind + 1)
-                    if (ind != -1) {
-                        index = i;
-                        watch = this.list[ind];
-                        deviations = 0;
-                        wi = 1;
+                    if (this.trigger[text[i]]) {
+                        if (ind < this.trigger[text[i]].length) {
+                            index = i;
+                            watch = this.list[this.trigger[text[i]][ind++]];
+                            deviations = 0;
+                            wi = 1;
+                        } else {
+                            ind = 0;
+                        }
                     }
                 }
             }
-            detected.sort((a, b) => {
-                return a.original.length !== b.original.length ? b.original.length - a.original.length : a.deviations - b.deviations
+            var group = [];
+            var groups = [];
+
+            detected.forEach((item, i) => {
+                if (i != 0 && item.start == detected[i - 1].start) {
+
+                } else {
+                    if (group.length) groups.push(group);
+                    group = [];
+                }
+                group.push(item);
             })
-            return detected;
+            if (group.length) groups.push(group);
+
+            // detected = [];
+            groups.forEach((group, ind) => {
+                group.sort((a, b) => {
+                    var diff = b.original.length - a.original.length;
+                    if (diff == 0) diff = a.deviations - b.deviations;
+                    return diff;
+                });
+                groups[ind] = group.filter((a, i) => {
+                    return i == 0 || group[i - 1].original.length !== group[i].original.length;
+                })
+                //    detected.push(group[0])
+
+            })
+            for (var i = 1; i < groups.length; i++) {
+                var group = groups[i];
+                var pgroup = groups[i - 1];
+                if (pgroup[0].end > group[0].start) {
+                    var ind = 1;
+                    while (ind < pgroup.length && pgroup[ind].end > group[0].start) ind++;
+                    if (ind < pgroup.length && pgroup[ind].end <= group[0].start) {
+                        if (pgroup[ind].deviations < pgroup[0].deviations) groups[i - 1] = groups[i - 1].slice(ind);
+                        else if (group[0].end <= pgroup[0].end) groups.splice(i--, 1)
+                    } else if (group[0].end <= pgroup[0].end) groups.splice(i--, 1)
+                }
+            }
+
+
+            var result = [];
+            groups.forEach((g) => {
+                result.push(g[0])
+            })
+
+            return result;
         }
     }
 
