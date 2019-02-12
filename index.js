@@ -98,8 +98,6 @@
 
     function canSkip(text, word, wi, i) {
 
-        if (word[wi] == text[i]) return 1; // If the same charactor, return true;
-
         if (word[wi] == "t" &&
             word[wi + 1] == "c" &&
             word[wi + 2] == "h" &&
@@ -122,6 +120,7 @@
                     word[wi] == "q"
                 ) ||
                 (
+                    isVowel(word[wi - 1]) &&
                     word[wi] == "c" &&
                     word[wi + 1] != "e"
                 )
@@ -130,6 +129,7 @@
                 text[i] == "k" || // ck can become k
                 text[i] == "q" || // ck can becoe q
                 (
+                    isVowel(text[i - 1]) &&
                     text[i] == "c" && // ck can becoe c
                     text[i + 1] != "e" // c makes a k sound unless if there is an e
                 )
@@ -139,16 +139,18 @@
                 word[wi + 1] == "k") ? 2 : 1;
         }
 
+        if (word[wi] == text[i]) return 1; // If the same charactor, return true;
+
         // Silent h can be skipped
         if (word[wi] == "h" && !isCombinedH(word[wi - 1], word[wi - 2])) {
-            return (wi + 1 >= word.length || canSkip(text, word, wi + 1, i)) ? 2 : 0;
+            return ((wi + 1 >= word.length && !isHard(text[i])) || canSkip(text, word, wi + 1, i)) ? 2 : 0;
         }
 
         if (isVowel(word[wi]) && !vowelDistinct(word[wi], word[wi - 1]) && !vowelDistinct(word[wi + 1], word[wi])) { // Vowels can be replaced/ommited only if they arnt combined like oo
             if (isVowel(text[i])) {
                 return canSwapVowel(word[wi], text[i]) ? 1 : 0; // If vowel is swappable with another, like e->i
             } else {
-                return (isHard(text[i]) && isHard(word[wi + 1]) && isHard(word[wi - 1]) && word[i + 1] != word[i - 1] && wi + 1 < word.length && canSkip(text, word, wi + 1, i)) ? 2 : 0; // Vowel can be ommited sometimes
+                return (isHard(text[i]) && isHard(word[wi + 1]) && isHard(word[wi - 1]) && word[wi + 1] != word[wi - 1] && wi + 1 < word.length && canSkip(text, word, wi + 1, i)) ? 2 : 0; // Vowel can be ommited sometimes
             }
         }
         return 0;
@@ -178,7 +180,8 @@
                 l: true,
                 s: true,
                 p: true,
-                s: true
+                s: true,
+                o: true
             }
 
 
@@ -195,6 +198,7 @@
                     posmap.push(i);
                     return true;
                 } else {
+                    posmap[posmap.length - 1] = i;
                     return false;
                 }
             }).join(""), posmap];
@@ -202,7 +206,7 @@
         addSwears(swearList) {
             for (var swear in swearList) {
                 this.list.push({
-                    word: this.convert(swear),
+                    word: this.escape(this.convert(swear))[0],
                     wordOriginal: swear,
                     info: swearList[swear]
                 });
@@ -243,7 +247,7 @@
                 if (watch) {
                     var word = watch.word;
                     var skipMode = canSkip(text, word, wi, i);
-                    //console.log(word, text[i], word[i], word[wi + 1], canSkip(text, word, wi, i))
+                    // console.log(i, wi, ind, word, text[i], word[wi], canSkip(text, word, wi, i))
                     if (
                         skipMode
                     ) {
@@ -259,7 +263,7 @@
                         if (wi >= word.length) {
                             if (
                                 (!isModifying(text[i]) || !isHard(text[i + 1]) || countSyllables(word) > 1) && // help vs erboy
-                                !isVowel(text[i + 1]) && // Next char must not be vowel - hello 
+                                (!isVowel(text[i + 1])) && // Next char must not be vowel - hello 
                                 (!isVowel(text[i]) || !isHard(text[i + 1])) && // tested is not teste
                                 countSyllables(text.substring(index, i + 1)) <= countSyllables(word) // Syllables must not be less than text
                             ) {
@@ -273,7 +277,6 @@
                                 });
                             }
                             watch = null;
-                            fo = co = 0;
                             i = index - 1;
                         } else
                         if (skipMode == 2) {
@@ -293,9 +296,8 @@
                                 // Stop if any combining vowel is missing. Because pound does not sound like pond
                                 (isVowel(word[i]) && vowelDistinct(word[i], word.charAt(wi - 1))) ||
 
-                                // Stop if a hard sound and a vowel mixed up
-                                (isVowel(word[i]) && isHard(text[i])) ||
-                                (isHard(word[i]) && isVowel(text[i])) ||
+                                // Stop if a hard sound
+                                isHard(text[i]) || isHard(word[i]) ||
 
                                 // Stop if missing an essential h (sh,th,etc...)
                                 (word[wi] == "h" && isCombinedH(word[wi - 1], word[wi - 2])) ||
@@ -306,8 +308,6 @@
                     ) {
                         watch = null;
                         i = index - 1;
-                        fo = 0;
-                        co = 0;
                     } else {
                         co++;
                         deviations++;
@@ -315,7 +315,6 @@
                     }
                     if (i + 1 >= text.length) {
                         watch = null;
-                        fo = co = 0;
                         i = index - 1;
                     }
                 } else if (
@@ -342,6 +341,20 @@
                             watch = this.list[this.trigger[text[i]][ind++]];
                             deviations = 0;
                             wi = 1;
+                            co = 0;
+                            if (watch.word.length == 1 && (watch.word == "i" || watch.word == "a")) {
+                                detected.push({
+                                    original: text[i],
+                                    word: watch.wordOriginal,
+                                    deviations: 0,
+                                    info: watch.info,
+                                    start: posmap[index],
+                                    end: posmap[i] + 1
+                                });
+                                watch = null
+                                i--;
+                            }
+
                         } else {
                             ind = 0;
                         }
@@ -358,6 +371,7 @@
                     if (group.length) groups.push(group);
                     group = [];
                 }
+                item.replacedLen = item.original.replace(/ /g, "").length;
                 group.push(item);
             })
             if (group.length) groups.push(group);
@@ -366,35 +380,136 @@
             groups.forEach((group, ind) => {
                 group.sort((a, b) => {
                     var diff = b.original.length - a.original.length;
+
                     if (diff == 0) diff = a.deviations - b.deviations;
                     return diff;
                 });
+
                 groups[ind] = group.filter((a, i) => {
                     return i == 0 || group[i - 1].original.length !== group[i].original.length;
-                })
-                //    detected.push(group[0])
+                });
 
-            })
-            for (var i = 1; i < groups.length; i++) {
-                var group = groups[i];
-                var pgroup = groups[i - 1];
-                if (pgroup[0].end > group[0].start) {
-                    var ind = 1;
-                    while (ind < pgroup.length && pgroup[ind].end > group[0].start) ind++;
-                    if (ind < pgroup.length && pgroup[ind].end <= group[0].start) {
-                        if (pgroup[ind].deviations < pgroup[0].deviations) groups[i - 1] = groups[i - 1].slice(ind);
-                        else if (group[0].end <= pgroup[0].end) groups.splice(i--, 1)
-                    } else if (group[0].end <= pgroup[0].end) groups.splice(i--, 1)
+                if (ind < groups.length - 1 && groups[ind][0].end >= groups[ind + 1][0].start)
+                    groups[ind].push({
+                        original: "",
+                        word: "",
+                        deviations: 0,
+                        start: groups[ind][0].start,
+                        end: groups[ind][0].start
+                    });
+
+            });
+            //            return groups;
+
+            var valueCache = [];
+            var s = 0;
+
+            function recurse(i) {
+
+                if (!groups[i]) return;
+
+
+                var g = groups[i];
+                var sum = 0;
+                var out = [];
+                for (var j = 0; j < g.length; j++) {
+                    var word = g[j];
+                    var result;
+                    var k = i + 1;
+                    while (k < groups.length && groups[k][0].start < word.end) k++;
+                    if (k < groups.length) {
+                        if (valueCache[k] !== undefined) {
+                            result = valueCache[k];
+                        } else {
+                            result = valueCache[k] = recurse(k);
+                        }
+                    }
+
+
+                    var d = word.deviations;
+                    var l = word.replacedLen
+
+                    if (result) {
+                        d += result[0].deviations;
+                        l += result[0].length;
+                    }
+                    var last = out[out.length - 1];
+                    if (!last || (l > last.length))
+                        out.push({
+                            deviations: d,
+                            length: l,
+                            word: word,
+                            result: result
+                        })
+                }
+                out.reverse();
+                return out;
+            }
+            var res = recurse(0);
+            if (!res) return [];
+            valueCache = [];
+            for (var i = 0; i < groups.length; i++) {
+                valueCache.push([])
+            }
+
+            function recurse3(i, len) {
+
+                if (!groups[i] || len < 0) return;
+
+
+                var g = groups[i];
+                var out = [];
+                for (var j = 0; j < g.length; j++) {
+                    var word = g[j];
+                    var result;
+                    var k = i + 1;
+                    while (k < groups.length && groups[k][0].start < word.end) k++;
+
+                    var words = 1;
+                    var d = word.deviations;
+                    var l = word.replacedLen;
+                    if (k < groups.length) {
+                        if (valueCache[k][len - l] !== undefined) {
+                            result = valueCache[k][len - l];
+                        } else {
+                            result = valueCache[k][len - l] = recurse3(k, len - l);
+                        }
+                    }
+
+                    if (result && result[0]) {
+                        d += result[0].deviations;
+                        l += result[0].length;
+                        words += result[0].words;
+                    }
+                    var last = out[out.length - 1];
+                    if (len - l == 0 && (!last || (words + d < last.words + last.deviations)))
+                        out.push({
+                            deviations: d,
+                            length: l,
+                            words: words,
+                            word: word,
+                            result: result
+                        })
+                }
+                out.reverse();
+                return out;
+            }
+            var reqlen = res[0].length;
+            res = recurse3(0, res[0].length);
+            if (!res) return [];
+            var out = [];
+            // console.log(reqlen)
+
+            function recurse2(dt) {
+                if (dt && dt[0]) {
+                    out.push(dt[0].word);
+                    recurse2(dt[0].result)
                 }
             }
 
-
-            var result = [];
-            groups.forEach((g) => {
-                result.push(g[0])
-            })
-
-            return result;
+            //  require("fs").writeFileSync("out.json", JSON.stringify(res))
+            recurse2(res);
+            return out;
         }
     }
 
