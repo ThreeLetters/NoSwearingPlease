@@ -60,7 +60,7 @@
     }
 
     var swapTable = {
-        //  o: ["a"],
+        o: ["u"],
         u: ["o"],
         i: ["e"]
     }
@@ -251,7 +251,7 @@
                 if (watch) {
                     var word = watch.word;
                     var skipMode = canSkip(text, word, wi, i);
-                    // console.log(i, wi, ind, word, text[i], word[wi], skipMode)
+                    console.log(i, wi, ind, word, text[i], word[wi], skipMode)
                     if (
                         skipMode
                     ) {
