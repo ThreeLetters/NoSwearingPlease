@@ -147,6 +147,7 @@
         }
 
         if (isVowel(word[wi]) && !vowelDistinct(word[wi], word[wi - 1]) && !vowelDistinct(word[wi + 1], word[wi])) { // Vowels can be replaced/ommited only if they arnt combined like oo
+
             if (isVowel(text[i])) {
                 return canSwapVowel(word[wi], text[i]) ? 1 : 0; // If vowel is swappable with another, like e->i
             } else {
@@ -247,7 +248,7 @@
                 if (watch) {
                     var word = watch.word;
                     var skipMode = canSkip(text, word, wi, i);
-                    // console.log(i, wi, ind, word, text[i], word[wi], canSkip(text, word, wi, i))
+                    // console.log(i, wi, ind, word, text[i], word[wi], skipMode)
                     if (
                         skipMode
                     ) {
@@ -289,16 +290,16 @@
                             text[i] !== " " && // Not if it is a space
                             (
                                 // If the deviations are due to modifiers (r and l), then stop, ie fork wont be read as fuck because the r modifier will change the sound of the word
-                                isModifying(text[i]) || isModifying(word[i]) ||
+                                isModifying(text[i]) || isModifying(word[wi]) ||
 
                                 // Stop if unswappable vowels
-                                (isVowel(word[i]) && isVowel(text[i]) && !canSwapVowel(word[i], text[i])) ||
+                                (isVowel(word[wi]) && isVowel(text[i]) && !canSwapVowel(word[wi], text[i])) ||
 
                                 // Stop if any combining vowel is missing. Because pound does not sound like pond
-                                (isVowel(word[i]) && vowelDistinct(word[i], word.charAt(wi - 1))) ||
+                                (isVowel(word[wi]) && vowelDistinct(word[wi], word.charAt(wi - 1))) ||
 
                                 // Stop if a hard sound
-                                isHard(text[i]) || isHard(word[i]) ||
+                                isHard(text[i]) || isHard(word[wi]) ||
 
                                 // Stop if missing an essential h (sh,th,etc...)
                                 (word[wi] == "h" && isCombinedH(word[wi - 1], word[wi - 2])) ||
@@ -307,6 +308,7 @@
                             )
                         )
                     ) {
+
                         watch = null;
                         i = index - 1;
                     } else {
