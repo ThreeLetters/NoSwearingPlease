@@ -265,6 +265,7 @@
                                 (!isModifying(text[i]) || !isHard(text[i + 1]) || countSyllables(word) > 1) && // help vs erboy
                                 (!isVowel(text[i + 1])) && // Next char must not be vowel - hello 
                                 (!isVowel(text[i]) || !isHard(text[i + 1])) && // tested is not teste
+                                (!isVowel(text[i]) || !isVowel(text[i + 1]) || !vowelDistinct(text[i + 1], text[i])) &&
                                 countSyllables(text.substring(index, i + 1)) <= countSyllables(word) // Syllables must not be less than text
                             ) {
                                 detected.push({
